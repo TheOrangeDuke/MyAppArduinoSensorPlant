@@ -1,12 +1,9 @@
 package com.myselia.myapp.arduinosensorplant;
 
-import com.mycelia.common.communication.units.TransmissionBuilder;
-import com.mycelia.common.constants.opcode.ActionType;
-import com.mycelia.common.constants.opcode.ComponentType;
-import com.mycelia.common.constants.opcode.OpcodeAccessor;
-import com.mycelia.sandbox.runtime.templates.MyceliaMasterModule;
+import com.myselia.javacommon.communication.units.TransmissionBuilder;
+import com.myselia.sandbox.runtime.templates.MyseliaMasterModule;
 
-public class Master extends MyceliaMasterModule {
+public class Master extends MyseliaMasterModule {
 	TransmissionBuilder tb = new TransmissionBuilder();
 
 	int count = 0 ;

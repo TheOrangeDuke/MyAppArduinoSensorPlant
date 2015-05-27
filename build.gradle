@@ -7,7 +7,7 @@ apply plugin: 'eclipse'
 
 defaultTasks 'tasks'
 
-group='com.mycelia'
+group='com.myselia'
 version = "1.0"
 archivesBaseName = project.name
 
@@ -15,8 +15,8 @@ sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
 dependencies {
-	compile project(':MyceliaCommon')
-	compile project(':MyceliaSandbox')
+	compile project(':MyseliaJavaCommon')
+	compile project(':MyseliaJavaSandbox')
 }
 
 buildscript {
