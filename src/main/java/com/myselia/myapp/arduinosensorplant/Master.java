@@ -17,7 +17,7 @@ public class Master extends MyceliaMasterModule {
 	
 	@Override
 	public void setup() {
-
+		System.out.println("MASTER SETUP");
 	}
 
 	protected void tick() {
