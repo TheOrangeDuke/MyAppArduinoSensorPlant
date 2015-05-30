@@ -1,6 +1,7 @@
 package com.myselia.myapp.arduinosensorplant;
 
 import com.google.gson.Gson;
+import com.myselia.javacommon.communication.mail.MailService;
 import com.myselia.javacommon.communication.units.TransmissionBuilder;
 import com.myselia.javacommon.constants.opcode.ActionType;
 import com.myselia.javacommon.constants.opcode.ComponentType;
@@ -47,6 +48,7 @@ public class Slave extends MyseliaSlaveModule {
 					jsonInterpreter.toJson(asd.getArduinoTransmission()));
 
 			mailbox.putInOutQueue(tb.getTransmission());
+			MailService.notify(this);
 		}
 	}
 }
