@@ -17,13 +17,15 @@ import com.myselia.myapp.arduinosensorplant.structures.ArduinoTransmission;
 
 public class ArduinoSensorDriver implements SerialPortEventListener {
 	
+	private static int errcount = 0;
+	
 	private Gson jsonInterpreter = new Gson();
 	private ArduinoTransmission at;
 
 	/** The port we're normally going to use. */
 	private static SerialPort serialPort;
 	
-	private static final boolean rpi = true;
+	private static final boolean rpi = false;
 	
 	private static final String PORT_NAMES[] = { "/dev/tty.usbserial-A9007UX1",
 		"/dev/ttyACM0", // Raspberry Pi
@@ -129,7 +131,7 @@ public class ArduinoSensorDriver implements SerialPortEventListener {
 				
 				System.out.println("New Arduino Transmission : length=" +inputLine.length() + " : transmission_nb=" + at.getTransmission());
 			} catch (Exception e) {
-				System.err.println("Error interpreting Arduino transmission.");
+				System.err.println("Error interpreting Arduino transmission. Error count : " + ++errcount);
 				System.err.println("||" + inputLine + "||");
 			}
 		}
