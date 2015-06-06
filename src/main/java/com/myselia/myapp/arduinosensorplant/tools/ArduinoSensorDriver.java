@@ -20,7 +20,7 @@ public class ArduinoSensorDriver implements SerialPortEventListener {
 	private static int errcount = 0;
 	
 	private Gson jsonInterpreter = new Gson();
-	private ArduinoTransmission at;
+	private volatile ArduinoTransmission at;
 
 	/** The port we're normally going to use. */
 	private static SerialPort serialPort;
