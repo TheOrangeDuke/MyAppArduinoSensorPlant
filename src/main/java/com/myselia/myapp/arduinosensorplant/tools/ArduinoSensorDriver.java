@@ -129,7 +129,7 @@ public class ArduinoSensorDriver implements SerialPortEventListener {
 				inputLine = input.readLine();
 				setArduinoTransmission(jsonInterpreter.fromJson(inputLine, ArduinoTransmission.class));
 				
-				System.out.println("New Arduino Transmission : length=" +inputLine.length() + " : transmission_nb=" + at.getTransmission());
+				//System.out.println("New Arduino Transmission : length=" +inputLine.length() + " : transmission_nb=" + at.getTransmission());
 			} catch (Exception e) {
 				System.err.println("Error interpreting Arduino transmission. Error count : " + ++errcount);
 				System.err.println("||" + inputLine + "||");
