@@ -2,6 +2,7 @@ package com.myselia.myapp.arduinosensorplant;
 
 import com.google.gson.Gson;
 import com.myselia.javacommon.communication.mail.MailService;
+import com.myselia.javacommon.communication.units.Message;
 import com.myselia.javacommon.communication.units.TransmissionBuilder;
 import com.myselia.javacommon.constants.opcode.ActionType;
 import com.myselia.javacommon.constants.opcode.ComponentType;
@@ -49,8 +50,8 @@ public class Slave extends MyseliaSlaveModule {
 			String to_opcode = OpcodeBroker.make(ComponentType.SANDBOXMASTER, null, ActionType.RUNTIME, SandboxMasterOperation.RESULTCONTAINER);
 			
 			tb.newTransmission(from_opcode, to_opcode);
-			tb.addAtom("Average", "int", avg);
-			tb.addAtom("ArduinoTransmission", "ArduinoTransmission", jsonInterpreter.toJson(at));
+			Message mess = new Message("master", "average", json.toJson(avg));
+			tb.addAtom("average", "Message", json.toJson(mess));
 
 			mailbox.enqueueOut(tb.getTransmission());
 			MailService.notify(this);
@@ -64,6 +65,18 @@ public class Slave extends MyseliaSlaveModule {
 		}
 		avg = avg/s.length;
 		return avg;
+	}
+
+	@Override
+	protected void handleTask() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void handleMessage() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
