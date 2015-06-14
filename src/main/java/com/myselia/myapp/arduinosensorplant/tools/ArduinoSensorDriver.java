@@ -25,7 +25,7 @@ public class ArduinoSensorDriver implements SerialPortEventListener {
 	/** The port we're normally going to use. */
 	private static SerialPort serialPort;
 	
-	private static final boolean rpi = false;
+	private static final boolean rpi = true;
 	
 	private static final String PORT_NAMES[] = { "/dev/tty.usbserial-A9007UX1",
 		"/dev/ttyACM0", // Raspberry Pi

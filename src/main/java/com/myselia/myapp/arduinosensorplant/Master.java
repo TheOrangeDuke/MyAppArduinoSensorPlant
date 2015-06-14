@@ -13,8 +13,11 @@ import com.myselia.javacommon.communication.units.Task;
 import com.myselia.javacommon.communication.units.Transmission;
 import com.myselia.javacommon.communication.units.TransmissionBuilder;
 import com.myselia.javacommon.constants.opcode.ActionType;
+import com.myselia.javacommon.constants.opcode.ComponentType;
 import com.myselia.javacommon.constants.opcode.OpcodeBroker;
+import com.myselia.javacommon.constants.opcode.operations.LensOperation;
 import com.myselia.javacommon.constants.opcode.operations.SandboxMasterOperation;
+import com.myselia.javacommon.constants.opcode.operations.SandboxSlaveOperation;
 import com.myselia.sandbox.runtime.templates.MyseliaMasterModule;
 
 public class Master extends MyseliaMasterModule {
@@ -39,15 +42,24 @@ public class Master extends MyseliaMasterModule {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().add(avg, BorderLayout.CENTER);
 		frame.pack();
-		frame.setSize(400, 70);
+		frame.setSize(400, 100);
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
 	}
 
 	protected void tick() {
 		try {
-			Thread.sleep(1000);
-
+			Thread.sleep(500);
+			
+			String to_opcode = OpcodeBroker.make(ComponentType.LENS, null, ActionType.DATA, LensOperation.TESTDATA);
+			String from_opcode = OpcodeBroker.make(ComponentType.SANDBOXMASTER, null, ActionType.RUNTIME, SandboxMasterOperation.TRANSFER);
+			tb.newTransmission(from_opcode, to_opcode);
+			tb.addAtom("average", "Integer", Integer.toString(average));
+			tb.addAtom("count", "Integer", Integer.toString(connection_status));
+			mailbox.enqueueOut(tb.getTransmission());
+			MailService.notify(this);
+		
+		
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
