@@ -46,8 +46,8 @@ public class Slave extends MyseliaSlaveModule {
 			ArduinoTransmission at = asd.getArduinoTransmission();
 			String avg = Integer.toString(getAverageSensorValue(at.getSensors()));
 			
-			String from_opcode = OpcodeBroker.make(ComponentType.SANDBOXSLAVE, null, ActionType.RUNTIME, SandboxSlaveOperation.RESULT);
-			String to_opcode = OpcodeBroker.make(ComponentType.SANDBOXMASTER, null, ActionType.RUNTIME, SandboxMasterOperation.RESULTCONTAINER);
+			String from_opcode = OpcodeBroker.make(ComponentType.SANDBOXSLAVE, null, ActionType.DATA, SandboxSlaveOperation.RESULT);
+			String to_opcode = OpcodeBroker.make(ComponentType.SANDBOXMASTER, null, ActionType.DATA, SandboxMasterOperation.RESULTCONTAINER);
 			
 			tb.newTransmission(from_opcode, to_opcode);
 			Message mess = new Message("master", "average", json.toJson(avg));

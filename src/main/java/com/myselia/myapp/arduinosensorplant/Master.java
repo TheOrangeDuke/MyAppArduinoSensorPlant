@@ -61,7 +61,7 @@ public class Master extends MyseliaMasterModule {
 		
 		
 		} catch (InterruptedException e) {
-			e.printStackTrace();
+			e.printStackTrace(); 
 		}
 	}
 
@@ -75,7 +75,7 @@ public class Master extends MyseliaMasterModule {
 		Message newmessage = messagebox.dequeueIn();
 		System.out.println(json.toJson(newmessage));
 		if(newmessage.getTitle().equals("average")){
-			//System.out.println("MASTER HANDLE MESSAGE");
+			System.out.println("MASTER HANDLE MESSAGE");
 			int value = Integer.parseInt(json.fromJson(newmessage.getContent(), String.class));
 			avg.setText("Average : " + value);
 		}
