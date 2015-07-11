@@ -58,6 +58,7 @@ public class Master extends MyseliaMasterModule {
 			tb.addAtom("count", "Integer", Integer.toString(connection_status));
 			mailbox.enqueueOut(tb.getTransmission());
 			MailService.notify(this);
+			
 		
 		
 		} catch (InterruptedException e) {
