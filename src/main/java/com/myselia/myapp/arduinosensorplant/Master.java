@@ -50,20 +50,9 @@ public class Master extends MyseliaMasterModule {
 
 	protected void tick() {
 		try {
-			Thread.sleep(5000);
-			
-			/*
-			String to_opcode = OpcodeBroker.make(ComponentType.LENS, null, ActionType.DATA, LensOperation.TESTDATA);
-			String from_opcode = OpcodeBroker.make(ComponentType.SANDBOXMASTER, null, ActionType.RUNTIME, SandboxMasterOperation.TRANSFER);
-			tb.newTransmission(from_opcode, to_opcode);
-			tb.addAtom("average", "Integer", Integer.toString(average));
-			tb.addAtom("count", "Integer", Integer.toString(connection_status));
-			mailbox.enqueueOut(tb.getTransmission());
-			MailService.notify(this);
-			*/
-			
-		
-		
+			Thread.sleep(500);
+			//send_message();
+
 		} catch (InterruptedException e) {
 			e.printStackTrace(); 
 		}
@@ -71,7 +60,7 @@ public class Master extends MyseliaMasterModule {
 
 	@Override
 	protected void handleTask() {
-		Task newtask = taskbox.dequeueIn();
+		//Task newtask = taskbox.dequeueIn();
 	}
 
 	@Override
@@ -81,8 +70,20 @@ public class Master extends MyseliaMasterModule {
 		if(newmessage.getTitle().equals("average")){
 			System.out.println("MASTER HANDLE MESSAGE");
 			int value = Integer.parseInt(json.fromJson(newmessage.getContent(), String.class));
+			average = value;
 			avg.setText("Average : " + value);
+			send_message();
 		}
+	}
+	
+	private void send_message(){
+		String to_opcode = OpcodeBroker.make(ComponentType.LENS, null, ActionType.DATA, LensOperation.TESTDATA);
+		String from_opcode = OpcodeBroker.make(ComponentType.SANDBOXMASTER, null, ActionType.RUNTIME, SandboxMasterOperation.TRANSFER);
+		tb.newTransmission(from_opcode, to_opcode);
+		tb.addAtom("average", "Integer", Integer.toString(average));
+		tb.addAtom("count", "Integer", Integer.toString(connection_status));
+		mailbox.enqueueOut(tb.getTransmission());
+		MailService.notify(this);
 	}
 
 }
