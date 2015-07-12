@@ -18,7 +18,7 @@ import com.myselia.sandbox.runtime.templates.MyseliaSlaveModule;
 public class Slave extends MyseliaSlaveModule {
 	TransmissionBuilder tb = new TransmissionBuilder();
 	Gson jsonInterpreter = new Gson();
-	ArduinoSensorDriver asd = new ArduinoSensorDriver();
+	ArduinoSensorDriver asd = new ArduinoSensorDriver(this);
 	int transmission_count = 0;
 
 	public Slave() {
@@ -34,38 +34,37 @@ public class Slave extends MyseliaSlaveModule {
 
 	@Override
 	protected void tick() {
-		boolean check = false;
-		
-		if(asd.getArduinoTransmission() != null){
-			if(asd.getArduinoTransmission().getTransmission() > transmission_count){
-				transmission_count = asd.getArduinoTransmission().getTransmission();
-				check=true;
-			}
-		}
-		
-		if (check) {
-			ArduinoTransmission at = asd.getArduinoTransmission();
-			String avg = Integer.toString(getAverageSensorValue(at.getSensors()));
-			
-			String from_opcode = OpcodeBroker.make(ComponentType.SANDBOXSLAVE, null, ActionType.DATA, SandboxSlaveOperation.RESULT);
-			String to_opcode = OpcodeBroker.make(ComponentType.SANDBOXMASTER, null, ActionType.DATA, SandboxMasterOperation.RESULTCONTAINER);
-			
-			tb.newTransmission(from_opcode, to_opcode);
-			Message mess = new Message("master", "average", json.toJson(avg));
-			tb.addAtom("average", "Message", json.toJson(mess));
-			
-			Transmission trans_out = tb.getTransmission();
-			System.out.println(jsonInterpreter.toJson(trans_out));
 
-			mailbox.enqueueOut(trans_out);
-			MailService.notify(this);
-		}
 	}
 	
-	public int getAverageSensorValue(Sensor[] s){
+	public void eventAction(){
+		ArduinoTransmission at = asd.getArduinoTransmission();
+		
+		String from_opcode = OpcodeBroker.make(ComponentType.SANDBOXSLAVE, null, ActionType.DATA, SandboxSlaveOperation.RESULT);
+		String to_opcode = OpcodeBroker.make(ComponentType.SANDBOXMASTER, null, ActionType.DATA, SandboxMasterOperation.RESULTCONTAINER);
+		
+		tb.newTransmission(from_opcode, to_opcode);
+		
+		//SENDING THE AVERAGE
+		String avg = Integer.toString(getAverageSensorValue(at.getSensors()));
+		Message mess_one = new Message("master", "average", json.toJson(avg));
+		tb.addAtom("average", "Message", json.toJson(mess_one));
+		
+		//SENDING THE COUNT
+		String cnt = Integer.toString(at.getTransmission());
+		Message mess_two = new Message("master", "count", json.toJson(cnt));
+		tb.addAtom("count", "Message", json.toJson(mess_two));
+		
+		Transmission trans_out = tb.getTransmission();
+
+		mailbox.enqueueOut(trans_out);
+		MailService.notify(this);
+	}
+	
+	public int getAverageSensorValue(int[] s){
 		int avg = 0;
 		for(int i = 0; i < s.length; i++){
-			avg += s[i].getValue();
+			avg += s[i];
 		}
 		avg = avg/s.length;
 		return avg;

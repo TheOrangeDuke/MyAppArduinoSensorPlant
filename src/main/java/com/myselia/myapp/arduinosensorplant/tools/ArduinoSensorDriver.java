@@ -13,6 +13,7 @@ import gnu.io.SerialPortEventListener;
 import java.util.Enumeration;
 
 import com.google.gson.Gson;
+import com.myselia.myapp.arduinosensorplant.Slave;
 import com.myselia.myapp.arduinosensorplant.structures.ArduinoTransmission;
 
 public class ArduinoSensorDriver implements SerialPortEventListener {
@@ -21,11 +22,12 @@ public class ArduinoSensorDriver implements SerialPortEventListener {
 	
 	private Gson jsonInterpreter = new Gson();
 	private volatile ArduinoTransmission at;
+	private Slave slave;
 
 	/** The port we're normally going to use. */
 	private static SerialPort serialPort;
 	
-	private static final boolean rpi = true;
+	private static final boolean rpi = false;
 	
 	private static final String PORT_NAMES[] = { "/dev/tty.usbserial-A9007UX1",
 		"/dev/ttyACM0", // Raspberry Pi
@@ -51,6 +53,10 @@ public class ArduinoSensorDriver implements SerialPortEventListener {
 	private static OutputStream output;
 	private static final int TIME_OUT = 2000;
 	private static final int DATA_RATE = 9600;
+	
+	public ArduinoSensorDriver(Slave slave){
+		this.slave = slave;
+	}
 
 	public void initialize() {
 		System.out.println("INITIALIZING...");
@@ -134,6 +140,8 @@ public class ArduinoSensorDriver implements SerialPortEventListener {
 				System.err.println("Error interpreting Arduino transmission. Error count : " + ++errcount);
 				System.err.println("||" + inputLine + "||");
 			}
+			
+			slave.eventAction();
 		}
 	}
 

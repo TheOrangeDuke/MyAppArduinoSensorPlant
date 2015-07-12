@@ -24,12 +24,14 @@ public class Master extends MyseliaMasterModule {
 	TransmissionBuilder tb = new TransmissionBuilder();
 
 	public static JFrame frame = new JFrame("Arduino Sensor Farm");
-	public static JLabel avg = new JLabel("Average : null");
+	public static JLabel label_avg = new JLabel("Average : null");
+	public static JLabel label_cnt = new JLabel("Count : null");
 
 	public static Gson gson = new Gson();
 
 	int connection_status = 0;
 	int average = 0;
+	int count = 0;
 
 	public Master() {
 		String check = OpcodeBroker.makeMailCheckingOpcode(
@@ -41,7 +43,8 @@ public class Master extends MyseliaMasterModule {
 	@Override
 	public void setup() {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.getContentPane().add(avg, BorderLayout.CENTER);
+		frame.getContentPane().add(label_avg, BorderLayout.WEST);
+		frame.getContentPane().add(label_cnt, BorderLayout.EAST);
 		frame.pack();
 		frame.setSize(400, 100);
 		frame.setLocationRelativeTo(null);
@@ -68,12 +71,13 @@ public class Master extends MyseliaMasterModule {
 		Message newmessage = messagebox.dequeueIn();
 		System.out.println(json.toJson(newmessage));
 		if(newmessage.getTitle().equals("average")){
-			System.out.println("MASTER HANDLE MESSAGE");
-			int value = Integer.parseInt(json.fromJson(newmessage.getContent(), String.class));
-			average = value;
-			avg.setText("Average : " + value);
-			send_message();
+			average  = Integer.parseInt(json.fromJson(newmessage.getContent(), String.class));
+			label_avg.setText("Average : " + average);
+		} else if(newmessage.getTitle().equals("count")){
+			count = Integer.parseInt(json.fromJson(newmessage.getContent(), String.class));
+			label_cnt.setText("Count : " + count);
 		}
+		
 	}
 	
 	private void send_message(){

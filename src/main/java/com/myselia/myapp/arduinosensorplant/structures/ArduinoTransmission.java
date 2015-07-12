@@ -1,37 +1,30 @@
 package com.myselia.myapp.arduinosensorplant.structures;
 
 public class ArduinoTransmission {
-	private int transmission = 0;
-	private int state_machine = 0;
-	private int led_intensity = 0;
-	private int led_oscillation_direction = 0;
-	private Sensor[] sensors = new Sensor[6];
+	private int t = 0;
+	private int s = 0;
+	private int l = 0;
+	private int[] sensor = new int[6];
 	
 	public int getTransmission() {
-		return transmission;
+		return t;
 	}
-	public void setTransmission(int transmission) {
-		this.transmission = transmission;
+	public void setTransmission(int t) {
+		this.t = t;
 	}
 	public int getState_machine() {
-		return state_machine;
+		return s;
 	}
-	public void setState_machine(int state_machine) {
-		this.state_machine = state_machine;
+	public void setState_machine(int t) {
+		this.s = t;
 	}
 	public int getLed_intensity() {
-		return led_intensity;
+		return l;
 	}
-	public void setLed_intensity(int led_intensity) {
-		this.led_intensity = led_intensity;
+	public void setLed_intensity(int l) {
+		this.l = l;
 	}
-	public int getLed_oscillation_direction() {
-		return led_oscillation_direction;
-	}
-	public void setLed_oscillation_direction(int led_oscillation_direction) {
-		this.led_oscillation_direction = led_oscillation_direction;
-	}
-	public Sensor[] getSensors() {
-		return sensors;
+	public int[] getSensors() {
+		return sensor;
 	}
 }
