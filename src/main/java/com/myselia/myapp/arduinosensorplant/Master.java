@@ -32,9 +32,10 @@ public class Master extends MyseliaMasterModule {
 	int average = 0;
 
 	public Master() {
-		MailService.register(OpcodeBroker.makeMailCheckingOpcode(
-				ActionType.RUNTIME, SandboxMasterOperation.RESULTCONTAINER),
-				this);
+		String check = OpcodeBroker.makeMailCheckingOpcode(
+				ActionType.DATA, SandboxMasterOperation.RESULTCONTAINER);
+		System.out.println(check);
+		MailService.register(check, this);
 	}
 
 	@Override
@@ -49,8 +50,9 @@ public class Master extends MyseliaMasterModule {
 
 	protected void tick() {
 		try {
-			Thread.sleep(500);
+			Thread.sleep(5000);
 			
+			/*
 			String to_opcode = OpcodeBroker.make(ComponentType.LENS, null, ActionType.DATA, LensOperation.TESTDATA);
 			String from_opcode = OpcodeBroker.make(ComponentType.SANDBOXMASTER, null, ActionType.RUNTIME, SandboxMasterOperation.TRANSFER);
 			tb.newTransmission(from_opcode, to_opcode);
@@ -58,6 +60,7 @@ public class Master extends MyseliaMasterModule {
 			tb.addAtom("count", "Integer", Integer.toString(connection_status));
 			mailbox.enqueueOut(tb.getTransmission());
 			MailService.notify(this);
+			*/
 			
 		
 		
