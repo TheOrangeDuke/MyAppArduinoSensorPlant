@@ -1,6 +1,7 @@
 package com.myselia.myapp.arduinosensorplant;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 
 import javax.swing.JFrame;
@@ -18,14 +19,15 @@ import com.myselia.javacommon.constants.opcode.OpcodeBroker;
 import com.myselia.javacommon.constants.opcode.operations.LensOperation;
 import com.myselia.javacommon.constants.opcode.operations.SandboxMasterOperation;
 import com.myselia.javacommon.constants.opcode.operations.SandboxSlaveOperation;
+import com.myselia.myapp.arduinosensorplant.tools.BarChart;
 import com.myselia.sandbox.runtime.templates.MyseliaMasterModule;
 
 public class Master extends MyseliaMasterModule {
 	TransmissionBuilder tb = new TransmissionBuilder();
 
-	public static JFrame frame = new JFrame("Arduino Sensor Farm");
+	public static JFrame frame = new JFrame();
+	public static BarChart chart = new BarChart();
 	public static JLabel label_avg = new JLabel("Average : null");
-	public static JLabel label_cnt = new JLabel("Count : null");
 
 	public static Gson gson = new Gson();
 
@@ -42,23 +44,21 @@ public class Master extends MyseliaMasterModule {
 
 	@Override
 	public void setup() {
+		chart.update(average, 10, 40, 90); 
+		frame.getContentPane().add(chart);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.getContentPane().add(label_avg, BorderLayout.WEST);
-		frame.getContentPane().add(label_cnt, BorderLayout.EAST);
 		frame.pack();
-		frame.setSize(400, 100);
+		frame.setSize(600, 600);
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
 	}
 
 	protected void tick() {
-		try {
-			Thread.sleep(500);
-			//send_message();
+		//send_message();
+			
+		int bro = (int)(((double)average/1024)*100);
+		chart.update(bro, 10, 40, 90); 
 
-		} catch (InterruptedException e) {
-			e.printStackTrace(); 
-		}
 	}
 
 	@Override
@@ -72,10 +72,9 @@ public class Master extends MyseliaMasterModule {
 		System.out.println(json.toJson(newmessage));
 		if(newmessage.getTitle().equals("average")){
 			average  = Integer.parseInt(json.fromJson(newmessage.getContent(), String.class));
-			label_avg.setText("Average : " + average);
 		} else if(newmessage.getTitle().equals("count")){
 			count = Integer.parseInt(json.fromJson(newmessage.getContent(), String.class));
-			label_cnt.setText("Count : " + count);
+			frame.setTitle("Sensor plant v0.1 | Transmission Count : " + count);
 		}
 		
 	}
