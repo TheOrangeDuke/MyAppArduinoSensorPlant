@@ -32,7 +32,9 @@ public class Master extends MyseliaMasterModule {
 	public static Gson gson = new Gson();
 
 	int connection_status = 0;
-	int average = 0;
+	int average_one = 0;
+	int average_two = 0;
+	int average_three = 0;
 	int count = 0;
 
 	public Master() {
@@ -44,7 +46,7 @@ public class Master extends MyseliaMasterModule {
 
 	@Override
 	public void setup() {
-		chart.update(average, 10, 40, 90); 
+		chart.update(average_one+4, average_two+4, average_three+4, 4); 
 		frame.getContentPane().add(chart);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.pack();
@@ -56,8 +58,10 @@ public class Master extends MyseliaMasterModule {
 	protected void tick() {
 		//send_message();
 			
-		int bro = (int)(((double)average/1024)*100);
-		chart.update(bro, 10, 40, 90); 
+		int value_one = (int)(((double)average_one/1024)*100);
+		int value_two = (int)(((double)average_two/1024)*100);
+		int value_three = (int)(((double)average_three/1024)*100);
+		chart.update(value_one+4, value_two+4, value_three + 4, 4); 
 
 	}
 
@@ -70,10 +74,18 @@ public class Master extends MyseliaMasterModule {
 	protected void handleMessage() {
 		Message newmessage = messagebox.dequeueIn();
 		System.out.println(json.toJson(newmessage));
-		if(newmessage.getTitle().equals("average")){
-			average  = Integer.parseInt(json.fromJson(newmessage.getContent(), String.class));
+		if(newmessage.getTitle().contains("average")){
+			if(newmessage.getTitle().contains("0")){
+				average_one  = Integer.parseInt(json.fromJson(newmessage.getContent(), String.class));
+			} else if(newmessage.getTitle().contains("1")){
+				average_two  = Integer.parseInt(json.fromJson(newmessage.getContent(), String.class));
+			} else if(newmessage.getTitle().contains("2")){
+				average_three  = Integer.parseInt(json.fromJson(newmessage.getContent(), String.class));
+			} else {
+				System.err.println("Unknown message source + ||" + newmessage.getTitle() + "||");
+			}
 		} else if(newmessage.getTitle().equals("count")){
-			count = Integer.parseInt(json.fromJson(newmessage.getContent(), String.class));
+			count++;
 			frame.setTitle("Sensor plant v0.1 | Transmission Count : " + count);
 		}
 		
@@ -83,8 +95,8 @@ public class Master extends MyseliaMasterModule {
 		String to_opcode = OpcodeBroker.make(ComponentType.LENS, null, ActionType.DATA, LensOperation.TESTDATA);
 		String from_opcode = OpcodeBroker.make(ComponentType.SANDBOXMASTER, null, ActionType.RUNTIME, SandboxMasterOperation.TRANSFER);
 		tb.newTransmission(from_opcode, to_opcode);
-		tb.addAtom("average", "Integer", Integer.toString(average));
-		tb.addAtom("count", "Integer", Integer.toString(connection_status));
+		tb.addAtom("average_one", "Integer", Integer.toString(average_one));
+		tb.addAtom("average_two", "Integer", Integer.toString(average_two));
 		mailbox.enqueueOut(tb.getTransmission());
 		MailService.notify(this);
 	}

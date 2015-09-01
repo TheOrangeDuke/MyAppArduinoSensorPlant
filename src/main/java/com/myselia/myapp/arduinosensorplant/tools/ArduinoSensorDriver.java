@@ -25,7 +25,7 @@ public class ArduinoSensorDriver implements SerialPortEventListener {
 	private Slave slave;
 
 	/** The port we're normally going to use. */
-	private static SerialPort serialPort;
+	private SerialPort serialPort;
 	
 	private static final boolean rpi = false;
 	
@@ -49,8 +49,8 @@ public class ArduinoSensorDriver implements SerialPortEventListener {
 		"/dev/ttyS80" //symbolic
 	};
 
-	private static BufferedReader input;
-	private static OutputStream output;
+	private BufferedReader input;
+	private OutputStream output;
 	private static final int TIME_OUT = 2000;
 	private static final int DATA_RATE = 9600;
 	
@@ -75,10 +75,10 @@ public class ArduinoSensorDriver implements SerialPortEventListener {
 		}
 		
 		
-		while (portEnum.hasMoreElements()) {
-			CommPortIdentifier currPortId = (CommPortIdentifier) portEnum.nextElement();
+		while (portEnum.hasMoreElements()) { // Runs through the entire initialization system
 			
-			//System.out.println("CHECKING ENUMERATION ELEMENTS : " + currPortId.getName());
+			CommPortIdentifier currPortId = (CommPortIdentifier) portEnum.nextElement();
+			System.out.println("CHECKING ENUMERATION ELEMENTS : " + currPortId.getName());
 			for (String portName : PORT_NAMES) {
 				if (currPortId.getName().equals(portName)) {
 					portId = currPortId;
@@ -87,38 +87,42 @@ public class ArduinoSensorDriver implements SerialPortEventListener {
 					//System.out.println("Checking port : " + portName);
 				}
 			}
+			
+			//
+			if (portId == null) {
+				System.err.println("Could not find serial port. - Inproper initialization");
+				continue;
+			}
+
+			try {
+				// open serial port, and use class name for the appName.
+				serialPort = (SerialPort) portId.open(this.getClass().getName(),TIME_OUT);
+				// set port parameters
+				serialPort.setSerialPortParams(DATA_RATE, SerialPort.DATABITS_8,
+						SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
+				// open the streams
+				input = new BufferedReader(new InputStreamReader(serialPort.getInputStream()));
+				output = serialPort.getOutputStream();
+
+				// add event listeners
+				serialPort.addEventListener(this);
+				serialPort.notifyOnDataAvailable(true);
+				
+				System.out.println("Properly Initialized.");
+				return; // properly initialized
+			} catch (Exception e) {
+				System.err.println("Error on port creation : " + e.toString());
+				continue;
+			}
 		}
-		
-		if (portId == null) {
-			System.err.println("Could not find serial port.");
-			return;
-		}
 
-		try {
-			// open serial port, and use class name for the appName.
-			serialPort = (SerialPort) portId.open(this.getClass().getName(),TIME_OUT);
-
-			// set port parameters
-			serialPort.setSerialPortParams(DATA_RATE, SerialPort.DATABITS_8,
-					SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
-
-			// open the streams
-			input = new BufferedReader(new InputStreamReader(serialPort.getInputStream()));
-			output = serialPort.getOutputStream();
-
-			// add event listeners
-			serialPort.addEventListener(this);
-			serialPort.notifyOnDataAvailable(true);
-		} catch (Exception e) {
-			System.err.println(e.toString());
-		}
 	}
 
 	/**
 	 * This should be called when you stop using the port. This will prevent
 	 * port locking on platforms like Linux.
 	 */
-	public static synchronized void close() {
+	public synchronized void close() {
 		if (serialPort != null) {
 			serialPort.removeEventListener();
 			serialPort.close();

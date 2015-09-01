@@ -47,7 +47,7 @@ public class Slave extends MyseliaSlaveModule {
 		
 		//SENDING THE AVERAGE
 		String avg = Integer.toString(getAverageSensorValue(at.getSensors()));
-		Message mess_one = new Message("master", "average", json.toJson(avg));
+		Message mess_one = new Message("master", "average_" + slaveID, json.toJson(avg));
 		tb.addAtom("average", "Message", json.toJson(mess_one));
 		
 		//SENDING THE COUNT
@@ -78,8 +78,8 @@ public class Slave extends MyseliaSlaveModule {
 
 	@Override
 	protected void handleMessage() {
-		// TODO Auto-generated method stub
-		
+		Message newmessage = messagebox.dequeueIn();
+		System.out.println(json.toJson(newmessage));	
 	}
 
 }
