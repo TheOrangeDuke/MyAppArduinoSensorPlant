@@ -1,24 +1,17 @@
 package com.myselia.myapp.arduinosensorplant;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 import com.google.gson.Gson;
 import com.myselia.javacommon.communication.mail.MailService;
 import com.myselia.javacommon.communication.units.Message;
-import com.myselia.javacommon.communication.units.Task;
-import com.myselia.javacommon.communication.units.Transmission;
 import com.myselia.javacommon.communication.units.TransmissionBuilder;
 import com.myselia.javacommon.constants.opcode.ActionType;
 import com.myselia.javacommon.constants.opcode.ComponentType;
 import com.myselia.javacommon.constants.opcode.OpcodeBroker;
 import com.myselia.javacommon.constants.opcode.operations.LensOperation;
 import com.myselia.javacommon.constants.opcode.operations.SandboxMasterOperation;
-import com.myselia.javacommon.constants.opcode.operations.SandboxSlaveOperation;
 import com.myselia.myapp.arduinosensorplant.tools.BarChart;
 import com.myselia.sandbox.runtime.templates.MyseliaMasterModule;
 
@@ -56,7 +49,7 @@ public class Master extends MyseliaMasterModule {
 	}
 
 	protected void tick() {
-		//send_message();
+		send_message();
 			
 		int value_one = (int)(((double)average_one/1024)*100);
 		int value_two = (int)(((double)average_two/1024)*100);
