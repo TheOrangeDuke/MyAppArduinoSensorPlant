@@ -10,6 +10,7 @@ public class Application {
 		
 		System.out.println("Myselia Application : Arduino Sensor Plant");
 		
+		app.applicationName("myapp001");
 		app.start();
 		
 	}

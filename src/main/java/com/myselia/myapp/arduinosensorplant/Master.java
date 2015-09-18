@@ -12,7 +12,9 @@ import com.myselia.javacommon.constants.opcode.ComponentType;
 import com.myselia.javacommon.constants.opcode.OpcodeBroker;
 import com.myselia.javacommon.constants.opcode.operations.LensOperation;
 import com.myselia.javacommon.constants.opcode.operations.SandboxMasterOperation;
+import com.myselia.javacommon.topology.MyseliaUUID;
 import com.myselia.myapp.arduinosensorplant.tools.BarChart;
+import com.myselia.sandbox.runtime.network.VirtualSlave;
 import com.myselia.sandbox.runtime.templates.MyseliaMasterModule;
 
 public class Master extends MyseliaMasterModule {
@@ -29,12 +31,18 @@ public class Master extends MyseliaMasterModule {
 	int average_two = 0;
 	int average_three = 0;
 	int count = 0;
+	
+	
 
 	public Master() {
 		String check = OpcodeBroker.makeMailCheckingOpcode(
 				ActionType.DATA, SandboxMasterOperation.RESULTCONTAINER);
 		System.out.println(check);
 		MailService.register(check, this);
+		
+		char[] uid = {'a', 'b', 'c'};
+		slaves = allocateVirtualSlaves(3, uid);
+		System.out.println("All virtual slaves are allocated;");
 	}
 
 	@Override
@@ -48,40 +56,55 @@ public class Master extends MyseliaMasterModule {
 		frame.setVisible(true);
 	}
 
-	protected void tick() {
-		send_message();
-			
+	protected void tick() {			
 		int value_one = (int)(((double)average_one/1024)*100);
 		int value_two = (int)(((double)average_two/1024)*100);
 		int value_three = (int)(((double)average_three/1024)*100);
 		chart.update(value_one+4, value_two+4, value_three + 4, 4); 
-
 	}
 
 	@Override
-	protected void handleTask() {
+	protected void handleTask(MyseliaUUID muuid) {
 		//Task newtask = taskbox.dequeueIn();
 	}
 
 	@Override
-	protected void handleMessage() {
+	protected void handleMessage(MyseliaUUID muuid) {
 		Message newmessage = messagebox.dequeueIn();
 		System.out.println(json.toJson(newmessage));
-		if(newmessage.getTitle().contains("average")){
-			if(newmessage.getTitle().contains("0")){
+		check_slaves();
+		if(newmessage.getTitle().contains("slavesetup")){
+			char uid = json.fromJson(newmessage.getContent(), String.class).charAt(0);
+			if(uid == 'a'){
+				slaves[0].assignMyseliaUUID(muuid);
+			} else if (uid == 'b'){
+				slaves[1].assignMyseliaUUID(muuid);
+			} else if (uid == 'c'){
+				slaves[2].assignMyseliaUUID(muuid);
+			} else {
+				System.err.println("Unknown setup source : ||"+uid+"||");
+			}
+		} else if(newmessage.getTitle().contains("average")){
+			//if you ever end up here again, it's because of a null pointer exception, eh?
+			//that null pointer exception happens when the Remote Slave 'forgets' to send
+			//its setup message to the master. this causes a null pointer on your virtual slave
+			//quick fix : Start Stem, Start Master, Start Daemon. Wait. Wait a while. Start Slave.
+			if(slaves[0].getMyseliaUUID().toString().equals(muuid.toString())){
+				System.out.println("Modifying Slave 0");
 				average_one  = Integer.parseInt(json.fromJson(newmessage.getContent(), String.class));
-			} else if(newmessage.getTitle().contains("1")){
+			} else if(slaves[1].getMyseliaUUID().toString().equals(muuid.toString())){
+				System.out.println("Modifying Slave 1");
 				average_two  = Integer.parseInt(json.fromJson(newmessage.getContent(), String.class));
-			} else if(newmessage.getTitle().contains("2")){
+			} else if(slaves[2].getMyseliaUUID().toString().equals(muuid.toString())){
+				System.out.println("Modifying Slave 2");
 				average_three  = Integer.parseInt(json.fromJson(newmessage.getContent(), String.class));
 			} else {
-				System.err.println("Unknown message source + ||" + newmessage.getTitle() + "||");
+				System.err.println("Unknown message source : ||" + muuid + "||");
 			}
-		} else if(newmessage.getTitle().equals("count")){
 			count++;
 			frame.setTitle("Sensor plant v0.1 | Transmission Count : " + count);
-		}
-		
+			send_message();
+		}		
 	}
 	
 	private void send_message(){
@@ -92,6 +115,15 @@ public class Master extends MyseliaMasterModule {
 		tb.addAtom("average_two", "Integer", Integer.toString(average_two));
 		mailbox.enqueueOut(tb.getTransmission());
 		MailService.notify(this);
+	}
+	
+	private void check_slaves(){
+		for(int i = 0; i < slaves.length; i++){
+			MyseliaUUID muuid = slaves[i].getMyseliaUUID();
+			if(muuid != null){
+				System.out.println("Slave Exists as " + i + " is : " + muuid.toString());
+			}
+		}
 	}
 
 }
