@@ -90,19 +90,20 @@ public class Master extends MyseliaMasterModule {
 			//its setup message to the master. this causes a null pointer on your virtual slave
 			//quick fix : Start Stem, Start Master, Start Daemon. Wait. Wait a while. Start Slave.
 			if(slaves[0].getMyseliaUUID().toString().equals(muuid.toString())){
-				System.out.println("Modifying Slave 0");
+				System.out.println("Modifying Slave a");
 				average_one  = Integer.parseInt(json.fromJson(newmessage.getContent(), String.class));
 			} else if(slaves[1].getMyseliaUUID().toString().equals(muuid.toString())){
-				System.out.println("Modifying Slave 1");
+				System.out.println("Modifying Slave b");
 				average_two  = Integer.parseInt(json.fromJson(newmessage.getContent(), String.class));
 			} else if(slaves[2].getMyseliaUUID().toString().equals(muuid.toString())){
-				System.out.println("Modifying Slave 2");
+				System.out.println("Modifying Slave c");
 				average_three  = Integer.parseInt(json.fromJson(newmessage.getContent(), String.class));
 			} else {
 				System.err.println("Unknown message source : ||" + muuid + "||");
 			}
 			count++;
 			frame.setTitle("Sensor plant v0.1 | Transmission Count : " + count);
+			
 			send_message();
 		}		
 	}
@@ -113,6 +114,7 @@ public class Master extends MyseliaMasterModule {
 		tb.newTransmission(from_opcode, to_opcode);
 		tb.addAtom("average_one", "Integer", Integer.toString(average_one));
 		tb.addAtom("average_two", "Integer", Integer.toString(average_two));
+		tb.addAtom("average_three", "Integer", Integer.toString(average_three));
 		mailbox.enqueueOut(tb.getTransmission());
 		MailService.notify(this);
 	}
@@ -120,7 +122,7 @@ public class Master extends MyseliaMasterModule {
 	private void check_slaves(){
 		for(int i = 0; i < slaves.length; i++){
 			MyseliaUUID muuid = slaves[i].getMyseliaUUID();
-			if(muuid != null){
+			if(!muuid.equals("")){
 				System.out.println("Slave Exists as " + i + " is : " + muuid.toString());
 			}
 		}

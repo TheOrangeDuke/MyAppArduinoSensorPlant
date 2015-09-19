@@ -2,19 +2,10 @@ package com.myselia.myapp.arduinosensorplant;
 
 import com.google.gson.Gson;
 import com.myselia.javacommon.communication.ComponentCommunicator;
-import com.myselia.javacommon.communication.mail.MailService;
 import com.myselia.javacommon.communication.units.Message;
-import com.myselia.javacommon.communication.units.Transmission;
-import com.myselia.javacommon.communication.units.TransmissionBuilder;
-import com.myselia.javacommon.constants.opcode.ActionType;
-import com.myselia.javacommon.constants.opcode.ComponentType;
-import com.myselia.javacommon.constants.opcode.OpcodeBroker;
-import com.myselia.javacommon.constants.opcode.operations.SandboxMasterOperation;
-import com.myselia.javacommon.constants.opcode.operations.SandboxSlaveOperation;
 import com.myselia.javacommon.topology.ComponentCertificate;
 import com.myselia.javacommon.topology.MyseliaUUID;
 import com.myselia.myapp.arduinosensorplant.structures.ArduinoTransmission;
-import com.myselia.myapp.arduinosensorplant.structures.Sensor;
 import com.myselia.myapp.arduinosensorplant.tools.ArduinoSensorDriver;
 import com.myselia.sandbox.runtime.ArgumentsInterpreter;
 import com.myselia.sandbox.runtime.templates.MyseliaSlaveModule;
@@ -56,7 +47,10 @@ public class Slave extends MyseliaSlaveModule {
 		}
 		
 		ArduinoTransmission at = asd.getArduinoTransmission();
+		System.out.println("GOT ARDUINO TRANSMISSION IN SLAVE MODULE:");
+		System.out.println("||" + json.toJson(at) + "||");
 		String avg = Integer.toString(getAverageSensorValue(at.getSensors()));
+		System.out.println("Averages out to : " + avg);
 		Message runtime_mess = new Message("master", "average", json.toJson(avg));
 		sendMessage("average", json.toJson(runtime_mess));
 	}

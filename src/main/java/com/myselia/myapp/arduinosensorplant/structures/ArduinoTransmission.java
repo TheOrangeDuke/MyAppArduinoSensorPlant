@@ -1,10 +1,10 @@
 package com.myselia.myapp.arduinosensorplant.structures;
 
 public class ArduinoTransmission {
-	private int t = 0;
-	private int s = 0;
-	private int l = 0;
-	private int[] sensor = new int[6];
+	private int t = 0; //transmission
+	private int s = 0; //state
+	private int l = 0; //led
+	private int[] sensors = new int[6];
 	
 	public int getTransmission() {
 		return t;
@@ -25,6 +25,6 @@ public class ArduinoTransmission {
 		this.l = l;
 	}
 	public int[] getSensors() {
-		return sensor;
+		return sensors;
 	}
 }
