@@ -20,7 +20,7 @@ import com.myselia.sandbox.runtime.ArgumentsInterpreter;
 import com.myselia.sandbox.runtime.templates.MyseliaSlaveModule;
 
 public class Slave extends MyseliaSlaveModule {
-	TransmissionBuilder tb = new TransmissionBuilder();
+
 	Gson jsonInterpreter = new Gson();
 	ArduinoSensorDriver asd = new ArduinoSensorDriver(this);
 	int transmission_count = 0;
@@ -44,56 +44,21 @@ public class Slave extends MyseliaSlaveModule {
 	}
 	
 	public void eventAction(){
-		
+		   
 		if(!masterSetup){
 			ComponentCertificate cc = ComponentCommunicator.componentCertificate;
 			if(cc != null){
-				System.out.println("not null fuckers!");
-				//setup with master: o.k., if you've reached this point in the code
-				//please take two minutes to cry and punch a wall *before* reading it
-				String from_opcode = OpcodeBroker.make(ComponentType.SANDBOXSLAVE, cc.getUUID(), ActionType.DATA, SandboxSlaveOperation.RESULT);
-				String to_opcode = OpcodeBroker.make(ComponentType.SANDBOXMASTER, null, ActionType.DATA, SandboxMasterOperation.RESULTCONTAINER);
-				tb.newTransmission(from_opcode, to_opcode);
+				System.out.println(">>>>>>>>>>>>>>>>>>CC IS NOT NULL: sending slavesetup to master");
 				Message setup_mess = new Message("master", "slavesetup", String.valueOf(ArgumentsInterpreter.uid));
-				tb.addAtom("average", "Message", json.toJson(setup_mess));
-				Transmission trans_out = tb.getTransmission();
-				mailbox.enqueueOut(trans_out);
-				MailService.notify(this);
+				sendMessage("slavesetup", json.toJson(setup_mess));
 				masterSetup = true;
 			}
 		}
 		
 		ArduinoTransmission at = asd.getArduinoTransmission();
-		
-		ComponentCertificate cc = null;
-		MyseliaUUID muuid = null;
-		
-		try{
-			cc = ComponentCommunicator.componentCertificate;
-			muuid = cc.getUUID();
-		}catch (Exception e){
-			return;
-		}
-		
-		String from_opcode = OpcodeBroker.make(ComponentType.SANDBOXSLAVE, muuid, ActionType.DATA, SandboxSlaveOperation.RESULT);
-		String to_opcode = OpcodeBroker.make(ComponentType.SANDBOXMASTER, null, ActionType.DATA, SandboxMasterOperation.RESULTCONTAINER);
-		
-		tb.newTransmission(from_opcode, to_opcode);
-		
-		//SENDING THE AVERAGE
 		String avg = Integer.toString(getAverageSensorValue(at.getSensors()));
-		Message mess_one = new Message("master", "average", json.toJson(avg));
-		tb.addAtom("average", "Message", json.toJson(mess_one));
-		
-		//SENDING THE COUNT
-		String cnt = Integer.toString(at.getTransmission());
-		Message mess_two = new Message("master", "count", json.toJson(cnt));
-		tb.addAtom("count", "Message", json.toJson(mess_two));
-		
-		Transmission trans_out = tb.getTransmission();
-
-		mailbox.enqueueOut(trans_out);
-		MailService.notify(this);
+		Message runtime_mess = new Message("master", "average", json.toJson(avg));
+		sendMessage("average", json.toJson(runtime_mess));
 	}
 	
 	public int getAverageSensorValue(int[] s){
