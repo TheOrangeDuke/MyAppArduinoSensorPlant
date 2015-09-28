@@ -13,26 +13,27 @@ import com.myselia.javacommon.constants.opcode.OpcodeBroker;
 import com.myselia.javacommon.constants.opcode.operations.LensOperation;
 import com.myselia.javacommon.constants.opcode.operations.SandboxMasterOperation;
 import com.myselia.javacommon.topology.MyseliaUUID;
-import com.myselia.myapp.arduinosensorplant.tools.BarChart;
-import com.myselia.sandbox.runtime.network.VirtualSlave;
 import com.myselia.sandbox.runtime.templates.MyseliaMasterModule;
 
 public class Master extends MyseliaMasterModule {
 	TransmissionBuilder tb = new TransmissionBuilder();
-
-	public static JFrame frame = new JFrame();
-	public static BarChart chart = new BarChart();
-	public static JLabel label_avg = new JLabel("Average : null");
-
+	
+	static final int SAMPLE_WINDOW_SIZE = 1024;	
+	static final String FILE = "samples/jazz.mp3";
+	
 	public static Gson gson = new Gson();
+	public static JFrame frame = new JFrame();
+	public static JLabel label_avg = new JLabel("Average : null");
+	
+	float[] fft = new float[SAMPLE_WINDOW_SIZE];
+	float[][] freqDom;
 
 	int connection_status = 0;
 	int average_one = 0;
 	int average_two = 0;
 	int average_three = 0;
 	int count = 0;
-	
-	
+
 
 	public Master() {
 		String check = OpcodeBroker.makeMailCheckingOpcode(
@@ -40,27 +41,29 @@ public class Master extends MyseliaMasterModule {
 		System.out.println(check);
 		MailService.register(check, this);
 		
-		char[] uid = {'a', 'b', 'c'};
-		slaves = allocateVirtualSlaves(3, uid);
-		System.out.println("All virtual slaves are allocated;");
+		char[] uid = {'a', 'b', 'c', 'd', 'e'};
+		slaves = allocateVirtualSlaves(5, uid);
+		System.out.println("All virtual slaves are allocated. (" + slaves.length +")");
 	}
 
 	@Override
 	public void setup() {
-		chart.update(average_one+4, average_two+4, average_three+4, 4); 
-		frame.getContentPane().add(chart);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.pack();
-		frame.setSize(600, 600);
-		frame.setLocationRelativeTo(null);
-		frame.setVisible(true);
+		
+		try {
+
+		}catch (Exception e) {
+			System.out.println("You're shit out of luck.");
+			e.printStackTrace();
+		}
 	}
 
-	protected void tick() {			
-		int value_one = (int)(((double)average_one/1024)*100);
-		int value_two = (int)(((double)average_two/1024)*100);
-		int value_three = (int)(((double)average_three/1024)*100);
-		chart.update(value_one+4, value_two+4, value_three + 4, 4); 
+	public void forwardTracksToSlaves(float[] frequencies){
+		System.out.println(json.toJson(frequencies));
+	}
+	
+	public void forwardDataToLens(float[][] domain){
+		String domain_str = json.toJson(domain);
+		
 	}
 
 	@Override
@@ -81,31 +84,16 @@ public class Master extends MyseliaMasterModule {
 				slaves[1].assignMyseliaUUID(muuid);
 			} else if (uid == 'c'){
 				slaves[2].assignMyseliaUUID(muuid);
-			} else {
+			} else if (uid == 'd'){
+				slaves[3].assignMyseliaUUID(muuid);
+			} else if (uid == 'e'){
+				slaves[4].assignMyseliaUUID(muuid);
+			} else{
 				System.err.println("Unknown setup source : ||"+uid+"||");
 			}
-		} else if(newmessage.getTitle().contains("average")){
-			//if you ever end up here again, it's because of a null pointer exception, eh?
-			//that null pointer exception happens when the Remote Slave 'forgets' to send
-			//its setup message to the master. this causes a null pointer on your virtual slave
-			//quick fix : Start Stem, Start Master, Start Daemon. Wait. Wait a while. Start Slave.
-			if(slaves[0].getMyseliaUUID().toString().equals(muuid.toString())){
-				System.out.println("Modifying Slave a");
-				average_one  = Integer.parseInt(json.fromJson(newmessage.getContent(), String.class));
-			} else if(slaves[1].getMyseliaUUID().toString().equals(muuid.toString())){
-				System.out.println("Modifying Slave b");
-				average_two  = Integer.parseInt(json.fromJson(newmessage.getContent(), String.class));
-			} else if(slaves[2].getMyseliaUUID().toString().equals(muuid.toString())){
-				System.out.println("Modifying Slave c");
-				average_three  = Integer.parseInt(json.fromJson(newmessage.getContent(), String.class));
-			} else {
-				System.err.println("Unknown message source : ||" + muuid + "||");
-			}
-			count++;
-			frame.setTitle("Sensor plant v0.1 | Transmission Count : " + count);
-			
-			send_message();
-		}		
+		} 
+		
+		send_message();	
 	}
 	
 	private void send_message(){
@@ -126,6 +114,12 @@ public class Master extends MyseliaMasterModule {
 				System.out.println("Slave Exists as " + i + " is : " + muuid.toString());
 			}
 		}
+	}
+
+	@Override
+	protected void tick() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
