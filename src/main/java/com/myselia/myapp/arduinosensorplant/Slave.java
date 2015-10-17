@@ -3,10 +3,12 @@ package com.myselia.myapp.arduinosensorplant;
 import com.google.gson.Gson;
 import com.myselia.javacommon.communication.ComponentCommunicator;
 import com.myselia.javacommon.communication.units.Message;
+import com.myselia.javacommon.constants.opcode.ComponentType;
 import com.myselia.javacommon.topology.ComponentCertificate;
 import com.myselia.javacommon.topology.MyseliaUUID;
 import com.myselia.myapp.arduinosensorplant.structures.ArduinoTransmission;
 import com.myselia.myapp.arduinosensorplant.tools.ArduinoSensorDriver;
+import com.myselia.sandbox.constants.MyseliaModuleType;
 import com.myselia.sandbox.runtime.ArgumentsInterpreter;
 import com.myselia.sandbox.runtime.templates.MyseliaSlaveModule;
 
@@ -41,7 +43,7 @@ public class Slave extends MyseliaSlaveModule {
 			if(cc != null){
 				System.out.println(">>>>>>>>>>>>>>>>>>CC IS NOT NULL: sending slavesetup to master");
 				Message setup_mess = new Message("master", "slavesetup", String.valueOf(ArgumentsInterpreter.uid));
-				sendMessage("slavesetup", json.toJson(setup_mess));
+				sendMessage(ComponentType.SANDBOXMASTER, null, "slavesetup", json.toJson(setup_mess));
 				masterSetup = true;
 			}
 		}
@@ -52,7 +54,7 @@ public class Slave extends MyseliaSlaveModule {
 		String avg = Integer.toString(getAverageSensorValue(at.getSensors()));
 		System.out.println("Averages out to : " + avg);
 		Message runtime_mess = new Message("master", "average", json.toJson(avg));
-		sendMessage("average", json.toJson(runtime_mess));
+		sendMessage(ComponentType.SANDBOXMASTER, null, "average", json.toJson(runtime_mess));
 	}
 	
 	public int getAverageSensorValue(int[] s){
