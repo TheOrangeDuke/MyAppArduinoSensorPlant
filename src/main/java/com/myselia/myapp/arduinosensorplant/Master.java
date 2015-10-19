@@ -1,6 +1,5 @@
 package com.myselia.myapp.arduinosensorplant;
 
-import com.myselia.javacommon.communication.units.Task;
 import com.myselia.myapp.arduinosensorplant.routines.IncomingDataStrategy;
 import com.myselia.myapp.arduinosensorplant.routines.LensUpdateStrategy;
 import com.myselia.myapp.arduinosensorplant.tools.BarChart;
@@ -46,6 +45,9 @@ public class Master extends MyseliaMasterModule {
 		int value_three = (int) (((double) average_three / 1024) * 100);
 		int value_four = (int) (((double) average_four / 1024) * 100);
 		chart.update(value_one + 4, value_two + 4, value_three + 4, value_four + 4);
-		lensUpdate.execute(new Task(), this);
+	}
+	
+	public void updateLens(){
+		lensUpdate.execute(null, this);
 	}
 }

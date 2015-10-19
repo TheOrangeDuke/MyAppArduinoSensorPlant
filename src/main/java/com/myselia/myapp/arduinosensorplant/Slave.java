@@ -17,7 +17,7 @@ public class Slave extends MyseliaSlaveModule {
 	Gson jsonInterpreter = new Gson();
 	ArduinoSensorDriver asd = new ArduinoSensorDriver(this);
 	int transmission_count = 0;
-	
+
 	boolean masterSetup = false;
 
 	public Slave() {
@@ -35,47 +35,42 @@ public class Slave extends MyseliaSlaveModule {
 	protected void tick() {
 
 	}
-	
-	public void eventAction(){
-		   
-		if(!masterSetup){
+
+	public void eventAction() {
+
+		if (!masterSetup) {
 			ComponentCertificate cc = ComponentCommunicator.componentCertificate;
-			if(cc != null){
+			if (cc != null) {
 				System.out.println(">>>>>>>>>>>>>>>>>>CC IS NOT NULL: sending slavesetup to master");
-				Message setup_mess = new Message("master", "slavesetup", String.valueOf(ArgumentsInterpreter.uid));
+				Message setup_mess = new Message(String.valueOf(ArgumentsInterpreter.uid), "master", "slavesetup",
+						String.valueOf(ArgumentsInterpreter.uid));
 				sendMessage(ComponentType.SANDBOXMASTER, null, "slavesetup", json.toJson(setup_mess));
 				masterSetup = true;
 			}
 		}
-		
+
 		ArduinoTransmission at = asd.getArduinoTransmission();
 		System.out.println("GOT ARDUINO TRANSMISSION IN SLAVE MODULE:");
 		System.out.println("||" + json.toJson(at) + "||");
 		String avg = Integer.toString(getAverageSensorValue(at.getSensors()));
 		System.out.println("Averages out to : " + avg);
-		Message runtime_mess = new Message("master", "average", json.toJson(avg));
+		Message runtime_mess = new Message(String.valueOf(ArgumentsInterpreter.uid), "master", "average", json.toJson(avg));
 		sendMessage(ComponentType.SANDBOXMASTER, null, "average", json.toJson(runtime_mess));
 	}
-	
-	public int getAverageSensorValue(int[] s){
+
+	public int getAverageSensorValue(int[] s) {
 		int avg = 0;
-		for(int i = 0; i < s.length; i++){
+		for (int i = 0; i < s.length; i++) {
 			avg += s[i];
 		}
-		avg = avg/s.length;
+		avg = avg / s.length;
 		return avg;
-	}
-
-	@Override
-	protected void handleTask(MyseliaUUID muuid) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	protected void handleMessage(MyseliaUUID muuid) {
 		Message newmessage = messagebox.dequeueIn();
-		System.out.println(json.toJson(newmessage));	
+		System.out.println(json.toJson(newmessage));
 	}
 
 }
