@@ -28,10 +28,10 @@ public class LensUpdateStrategy implements Strategy {
 		master.tb.newTransmission(from_opcode, to_opcode);
 		
 		UIDataPacket packet = new UIDataPacket();
-		packet.insertData(new DiscreteBarChartData("ONE", (double) Master.average_one/100));
-		packet.insertData(new DiscreteBarChartData("TWO", (double) Master.average_two/100));	
-		packet.insertData(new DiscreteBarChartData("THREE", (double) Master.average_three/100));	
-		packet.insertData(new DiscreteBarChartData("FOUR", (double) Master.average_four/100));	
+		packet.insertData(new DiscreteBarChartData("ONE", (double) Master.average_one/1000));
+		packet.insertData(new DiscreteBarChartData("TWO", (double) Master.average_two/1000));	
+		packet.insertData(new DiscreteBarChartData("THREE", (double) Master.average_three/1000));	
+		packet.insertData(new DiscreteBarChartData("FOUR", 1.0));	
 		//SHA1 of 'godzillafucksyourmum'
 		master.tb.addAtom("12a7869435cca185b53597e93f277849c066fc55", "DataSeries", json.toJson(packet));
 		
