@@ -9,7 +9,7 @@ import javax.swing.JPanel;
 
 public class BarChart extends JPanel{
 	
-	public static JFrame frame = new JFrame();;
+	public static JFrame frame = new JFrame();
 	
 	private Color[] colors = {Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW};
 	private int[] bars = new int[4];
