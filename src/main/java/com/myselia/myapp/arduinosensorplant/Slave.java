@@ -5,12 +5,11 @@ import com.myselia.javacommon.communication.ComponentCommunicator;
 import com.myselia.javacommon.communication.units.Message;
 import com.myselia.javacommon.constants.opcode.ComponentType;
 import com.myselia.javacommon.topology.ComponentCertificate;
-import com.myselia.javacommon.topology.MyseliaUUID;
 import com.myselia.myapp.arduinosensorplant.structures.ArduinoTransmission;
 import com.myselia.myapp.arduinosensorplant.tools.ArduinoSensorDriver;
-import com.myselia.sandbox.constants.MyseliaModuleType;
-import com.myselia.sandbox.runtime.ArgumentsInterpreter;
-import com.myselia.sandbox.runtime.templates.MyseliaSlaveModule;
+import com.myselia.sandbox.runtime.settings.ArgumentsInterpreter;
+import com.myselia.sandbox.templates.MyseliaSlaveModule;
+import com.myselia.sandbox.templates.proxy.MyseliaMasterModuleProxy;
 
 public class Slave extends MyseliaSlaveModule {
 
@@ -21,19 +20,8 @@ public class Slave extends MyseliaSlaveModule {
 	boolean masterSetup = false;
 
 	public Slave() {
-		System.out.println("Slave Module Initialisation");
-	}
-
-	@Override
-	public void setup() {
-		System.out.println("SLAVE SETUP");
 		asd.initialize();
 		asd.roll();
-	}
-
-	@Override
-	protected void tick() {
-
 	}
 
 	public void eventAction() {
@@ -55,7 +43,7 @@ public class Slave extends MyseliaSlaveModule {
 		String avg = Integer.toString(getAverageSensorValue(at.getSensors()));
 		System.out.println("Averages out to : " + avg);
 		Message runtime_mess = new Message(String.valueOf(ArgumentsInterpreter.uid), "master", "average", json.toJson(avg));
-		sendMessage(ComponentType.SANDBOXMASTER, null, "average", json.toJson(runtime_mess));
+		MyseliaMasterModuleProxy.getInstance().sendMessage(runtime_mess);
 	}
 
 	public int getAverageSensorValue(int[] s) {
@@ -65,12 +53,6 @@ public class Slave extends MyseliaSlaveModule {
 		}
 		avg = avg / s.length;
 		return avg;
-	}
-
-	@Override
-	protected void handleMessage(MyseliaUUID muuid) {
-		Message newmessage = messagebox.dequeueIn();
-		System.out.println(json.toJson(newmessage));
 	}
 
 }

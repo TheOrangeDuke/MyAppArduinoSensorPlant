@@ -27,7 +27,7 @@ public class ArduinoSensorDriver implements SerialPortEventListener {
 	/** The port we're normally going to use. */
 	private SerialPort serialPort;
 	
-	private static final boolean rpi = true;
+	private static final boolean rpi = false;
 	
 	private static final String PORT_NAMES[] = { "/dev/tty.usbserial-A9007UX1",
 		"/dev/ttyACM0", // Raspberry Pi
@@ -88,9 +88,8 @@ public class ArduinoSensorDriver implements SerialPortEventListener {
 				}
 			}
 			
-			//
+			//if the port id is null, skip this port
 			if (portId == null) {
-				System.err.println("Could not find serial port. - Inproper initialization");
 				continue;
 			}
 
