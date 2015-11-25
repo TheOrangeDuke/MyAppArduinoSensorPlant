@@ -14,13 +14,14 @@ public class BarChart extends JPanel{
 	private Color[] colors = {Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW};
 	private int[] bars = new int[4];
 
-	public void update(int one, int two, int three, int four){
+	public void update(int count, int one, int two, int three, int four){
 		removeAll();
 		updateUI();
 		bars[0] = one;
 		bars[1] = two;
 		bars[2] = three;
 		bars[3] = four;
+		setTitle(count);
 		
 		repaint();
 		
@@ -49,6 +50,10 @@ public class BarChart extends JPanel{
 	@Override
     public Dimension getPreferredSize() {
 		return new Dimension(bars.length * 10 + 2, 50);
+	}
+	
+	public void setTitle(int count){
+		frame.setTitle("Count : " + count);
 	}
 
 	public void setFrame() {

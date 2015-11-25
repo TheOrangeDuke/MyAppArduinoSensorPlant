@@ -59,7 +59,7 @@ public class ArduinoSensorDriver implements SerialPortEventListener {
 	}
 
 	public void initialize() {
-		System.out.println("INITIALIZING...");
+		System.out.println("Arduino Sensor Driver : Initializing...");
 		
 		if(rpi){
 			System.setProperty("gnu.io.rxtx.SerialPorts", "/dev/ttyACM0");
@@ -71,14 +71,14 @@ public class ArduinoSensorDriver implements SerialPortEventListener {
 		try {
 			portId = CommPortIdentifier.getPortIdentifier(PORT_NAMES[1]);
 		} catch (NoSuchPortException e) {
-			System.err.println("No such port exception");
+			System.err.println("Arduino Sensor Driver : No such port exception");
 		}
 		
 		
 		while (portEnum.hasMoreElements()) { // Runs through the entire initialization system
 			
 			CommPortIdentifier currPortId = (CommPortIdentifier) portEnum.nextElement();
-			System.out.println("CHECKING ENUMERATION ELEMENTS : " + currPortId.getName());
+			System.out.println("Arduino Sensor Driver : checking enumeration element : " + currPortId.getName());
 			for (String portName : PORT_NAMES) {
 				if (currPortId.getName().equals(portName)) {
 					portId = currPortId;
@@ -107,10 +107,10 @@ public class ArduinoSensorDriver implements SerialPortEventListener {
 				serialPort.addEventListener(this);
 				serialPort.notifyOnDataAvailable(true);
 				
-				System.out.println("Properly Initialized.");
+				System.out.println("Arduino Sensor Driver : Properly Initialized.");
 				return; // properly initialized
 			} catch (Exception e) {
-				System.err.println("Error on port creation : " + e.toString());
+				System.err.println("Arduino Sensor Driver : Error on port creation : " + e.toString());
 				continue;
 			}
 		}
@@ -138,8 +138,8 @@ public class ArduinoSensorDriver implements SerialPortEventListener {
 				inputLine = input.readLine();
 				setArduinoTransmission(jsonInterpreter.fromJson(inputLine, ArduinoTransmission.class));
 				
-				System.out.println("New Arduino Transmission : length=" +inputLine.length() + " : transmission_nb=" + at.getTransmission());
-				System.out.println("||" + inputLine + "||");
+				//System.out.println("Arduino Sensor Driver : New Arduino Transmission : length=" +inputLine.length() + " : transmission_nb=" + at.getTransmission());
+				//System.out.println("Arduino Sensor Driver : ||" + inputLine + "||");
 			} catch (Exception e) {
 				System.err.println("Error interpreting Arduino transmission. Error count : " + ++errcount);
 				System.err.println("||" + inputLine + "||");

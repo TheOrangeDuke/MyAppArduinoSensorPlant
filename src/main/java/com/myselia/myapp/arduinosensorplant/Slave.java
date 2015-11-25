@@ -17,30 +17,19 @@ public class Slave extends MyseliaSlaveModule {
 	ArduinoSensorDriver asd = new ArduinoSensorDriver(this);
 	int transmission_count = 0;
 
-	boolean masterSetup = false;
-
 	public Slave() {
+		componentType = ComponentType.SANDBOXSLAVE;
 		asd.initialize();
 		asd.roll();
 	}
 
 	public void eventAction() {
-		System.out.println("Slave : eventAction()");
-
-		//TODO: abstract away from user
-		if (!masterSetup) {
-			System.out.println("Slave : eventAction() : masterSetup");
-			Message setup_mess = new Message(String.valueOf(ArgumentsInterpreter.uid), "master", "slavesetup",
-					String.valueOf(ArgumentsInterpreter.uid));
-			MyseliaMasterModuleProxy.getInstance().sendMessage(setup_mess);
-			masterSetup = true;
-		}
-
+		//System.out.println("Slave : eventAction()");
 		ArduinoTransmission at = asd.getArduinoTransmission();
 		String avg = Integer.toString(getAverageSensorValue(at.getSensors()));
-		System.out.println("Arduino reported value averages out to : " + avg);
+		//System.out.println("Arduino reported value averages out to : " + avg);
 		Message runtime_mess = new Message(String.valueOf(ArgumentsInterpreter.uid), "master", "average", json.toJson(avg));
-		MyseliaMasterModuleProxy.getInstance().sendMessage(runtime_mess);
+		MyseliaMasterModuleProxy.getInstance().sendMessage(this, runtime_mess);
 	}
 
 	public int getAverageSensorValue(int[] s) {
