@@ -9,7 +9,7 @@ import com.myselia.myapp.arduinosensorplant.structures.ArduinoTransmission;
 import com.myselia.myapp.arduinosensorplant.tools.ArduinoSensorDriver;
 import com.myselia.sandbox.runtime.settings.ArgumentsInterpreter;
 import com.myselia.sandbox.templates.MyseliaSlaveModule;
-import com.myselia.sandbox.templates.proxy.MyseliaMasterModuleProxy;
+import com.myselia.sandbox.templates.proxy.MasterModuleProxy;
 
 public class Slave extends MyseliaSlaveModule {
 
@@ -28,8 +28,8 @@ public class Slave extends MyseliaSlaveModule {
 		ArduinoTransmission at = asd.getArduinoTransmission();
 		String avg = Integer.toString(getAverageSensorValue(at.getSensors()));
 		//System.out.println("Arduino reported value averages out to : " + avg);
-		Message runtime_mess = new Message(String.valueOf(ArgumentsInterpreter.uid), "master", "average", json.toJson(avg));
-		MyseliaMasterModuleProxy.getInstance().sendMessage(this, runtime_mess);
+		Message runtime_mess = new Message("average", json.toJson(avg));
+		MasterModuleProxy.getInstance().sendMessage(this, runtime_mess);
 	}
 
 	public int getAverageSensorValue(int[] s) {
