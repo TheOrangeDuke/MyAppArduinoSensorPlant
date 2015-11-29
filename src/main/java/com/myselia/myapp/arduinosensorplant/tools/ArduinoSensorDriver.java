@@ -27,7 +27,7 @@ public class ArduinoSensorDriver implements SerialPortEventListener {
 	/** The port we're normally going to use. */
 	private SerialPort serialPort;
 	
-	private static final boolean rpi = false;
+	private static final boolean rpi = true;
 	
 	private static final String PORT_NAMES[] = { "/dev/tty.usbserial-A9007UX1",
 		"/dev/ttyACM0", // Raspberry Pi
@@ -139,12 +139,12 @@ public class ArduinoSensorDriver implements SerialPortEventListener {
 				setArduinoTransmission(jsonInterpreter.fromJson(inputLine, ArduinoTransmission.class));
 				
 				//System.out.println("Arduino Sensor Driver : New Arduino Transmission : length=" +inputLine.length() + " : transmission_nb=" + at.getTransmission());
-				//System.out.println("Arduino Sensor Driver : ||" + inputLine + "||");
+				System.out.println("Arduino Sensor Driver : ||" + inputLine + "||");
 			} catch (Exception e) {
 				System.err.println("Error interpreting Arduino transmission. Error count : " + ++errcount);
 				System.err.println("||" + inputLine + "||");
 			}
-			
+			System.out.println("ASD : Slave.eventAction()");
 			slave.eventAction();
 		}
 	}
