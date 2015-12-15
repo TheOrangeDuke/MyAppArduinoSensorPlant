@@ -27,10 +27,8 @@ public class Slave extends MyseliaSlaveModule {
 		//System.out.println("Slave : eventAction()");
 		ArduinoTransmission at = asd.getArduinoTransmission();
 		String avg = Integer.toString(getAverageSensorValue(at.getSensors()));
-		//System.out.println("Arduino reported value averages out to : " + avg);
 		Message runtime_mess = new Message("average", json.toJson(avg));
 		MasterModuleProxy.getInstance().sendMessage(this, runtime_mess);
-		System.out.println("Finished sending stuff.");
 	}
 
 	public int getAverageSensorValue(int[] s) {

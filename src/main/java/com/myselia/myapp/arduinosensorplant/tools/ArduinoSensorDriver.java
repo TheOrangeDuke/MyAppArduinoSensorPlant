@@ -139,12 +139,11 @@ public class ArduinoSensorDriver implements SerialPortEventListener {
 				setArduinoTransmission(jsonInterpreter.fromJson(inputLine, ArduinoTransmission.class));
 				
 				//System.out.println("Arduino Sensor Driver : New Arduino Transmission : length=" +inputLine.length() + " : transmission_nb=" + at.getTransmission());
-				System.out.println("Arduino Sensor Driver : ||" + inputLine + "||");
+				//System.out.println("Arduino Sensor Driver : ||" + inputLine + "||");
 			} catch (Exception e) {
 				System.err.println("Error interpreting Arduino transmission. Error count : " + ++errcount);
 				System.err.println("||" + inputLine + "||");
 			}
-			System.out.println("ASD : Slave.eventAction()");
 			slave.eventAction();
 		}
 	}
